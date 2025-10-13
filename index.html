@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Key Vault</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: url("images/back.png") no-repeat center center fixed,
+          linear-gradient(to right, #e6d8c6, #9b877a, #4a3c33);
+        background-size: cover;
+        padding: 20px;
+        position: relative;
+        min-height: 100vh;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.15);
+        z-index: -1;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #1a1a2e;
+        font-weight: bold;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        font-weight: 600;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .vault-container {
+        display: inline-block;
+        position: relative;
+        background-color: #1a1a2e;
+        color: #fff;
+        padding: 2px 15px;
+        border-radius: 8px;
+        margin-left: 10px;
+        height: 1.2em;
+        overflow: hidden;
+      }
+
+      #animated-word {
+        display: inline-block;
+        transition: transform 0.4s ease-in-out;
+      }
+
+      @keyframes slide-up-out {
+        from {
+          transform: translateY(0%);
+          opacity: 1;
+        }
+        to {
+          transform: translateY(-120%);
+          opacity: 0;
+        }
+      }
+
+      @keyframes slide-up-in {
+        from {
+          transform: translateY(120%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0%);
+          opacity: 1;
+        }
+      }
+
+      .sliding-out {
+        animation: slide-up-out 0.4s forwards ease-in-out;
+      }
+
+      .sliding-in {
+        animation: slide-up-in 0.4s forwards ease-in-out;
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      .card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: white;
+        cursor: pointer;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .card-header {
+        padding: 30px 25px;
+        color: white;
+        position: relative;
+        background-size: cover;
+        background-position: center;
+        background-blend-mode: overlay;
+      }
+
+      .card-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: inherit;
+        opacity: 0.9;
+        z-index: 0;
+      }
+
+      .card-header > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .card-header h2 {
+        font-size: 1.6em;
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .card-header .subtitle,
+      .card-header .instructor {
+        font-size: 1em;
+        opacity: 0.95;
+      }
+
+      .card-title-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .card-title-container h2 {
+        margin-bottom: 0;
+      }
+
+      .delete-btn-header {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.2em;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+        padding: 0;
+        line-height: 1;
+      }
+
+      .delete-btn-header:hover {
+        opacity: 1;
+        transform: scale(1.1);
+      }
+
+      .card-body {
+        padding: 25px 20px;
+        background: white;
+        min-height: 100px;
+      }
+
+      .card-body a {
+        display: block;
+        color: #0369a1;
+        text-decoration: none;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #f0f9ff;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        word-wrap: break-word;
+      }
+
+      .card-body a:hover {
+        background: #0369a1;
+        color: white;
+        transform: translateX(5px);
+      }
+
+      /* Card background colors */
+      .card-1 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(13, 148, 136, 0.9) 0%,
+            rgba(20, 184, 166, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800")
+            center/cover;
+      }
+
+      .card-2 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(71, 85, 105, 0.9) 0%,
+            rgba(100, 116, 139, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800")
+            center/cover;
+      }
+
+      .card-3 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(3, 105, 161, 0.9) 0%,
+            rgba(2, 132, 199, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800")
+            center/cover;
+      }
+
+      .card-4 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(51, 65, 85, 0.9) 0%,
+            rgba(71, 85, 105, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800")
+            center/cover;
+      }
+
+      .card-5 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(5, 150, 105, 0.9) 0%,
+            rgba(16, 185, 129, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=800")
+            center/cover;
+      }
+
+      .card-6 .card-header {
+        background: linear-gradient(
+            135deg,
+            rgba(219, 39, 119, 0.9) 0%,
+            rgba(236, 72, 153, 0.9) 100%
+          ),
+          url("https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800")
+            center/cover;
+      }
+
+      /* Add Card Button Styles */
+      .add-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 2px dashed rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .add-card:hover {
+        background: rgba(255, 255, 255, 0.35);
+        transform: translateY(-5px);
+      }
+
+      .add-icon {
+        font-size: 3em;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .add-card:hover .add-icon {
+        color: white;
+        transform: scale(1.1);
+      }
+
+      .add-text {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        font-size: 1.2em;
+      }
+
+      /* modal styles moved to styles/modal.css */
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .btn {
+        padding: 12px 25px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1em;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .btn-primary {
+        background: #1a2a6c;
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #0e1a4a;
+      }
+
+      .btn-secondary {
+        background: #f0f0f0;
+        color: #333;
+      }
+
+      .btn-secondary:hover {
+        background: #e0e0e0;
+      }
+
+      /* Success Message */
+      .success-message {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(5, 150, 105, 0.9);
+        color: white;
+        border-radius: 6px;
+        text-align: center;
+        display: none;
+      }
+
+      .error-message {
+        margin-top: 20px;
+        padding: 15px;
+        background: rgba(239, 68, 68, 0.9);
+        color: white;
+        border-radius: 6px;
+        text-align: center;
+        display: none;
+      }
+
+      /* Loading Spinner */
+      .spinner {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top: 4px solid #1a2a6c;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        margin: 20px auto;
+        display: none;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1024px) {
+        .header h1 {
+          font-size: 2em;
+        }
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 15px;
+        }
+
+        .header {
+          padding: 15px;
+        }
+
+        .header h1 {
+          font-size: 1.8em;
+        }
+
+        .card-header h2 {
+          font-size: 1.4em;
+        }
+
+        .card-body {
+          padding: 20px 15px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .header h1 {
+          font-size: 1.5em;
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        .vault-container {
+          margin-left: 0;
+          padding: 2px 10px;
+        }
+
+        .card-header h2 {
+          font-size: 1.2em;
+        }
+
+        .card-body a {
+          font-size: 0.9em;
+        }
+
+        .modal-content {
+          width: 95%;
+        }
+
+        .form-actions {
+          flex-direction: column;
+        }
+      }
+    </style>
+    <link rel="stylesheet" href="styles/modal.css" />
+  </head>
+  <body>
+    <div class="header">
+      <h1>
+        KEY
+        <span class="vault-container">
+          <span id="animated-word">VAULT</span>
+        </span>
+      </h1>
+    </div>
+
+    <div class="container" id="cards-container">
+      <div class="card card-1">
+        <div class="card-header">
+          <h2>MASTER-LINK-3RD-SEMESTER</h2>
+          <div class="subtitle">
+            Where You Find All Course link and Holiday list, timetable and more
+          </div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://sites.google.com/rvu.edu.in/3rdsemestersite/home"
+            target="_blank"
+            >https://sites.google.com/rvu.edu.in/3rdsemestersite/home</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-2">
+        <div class="card-header">
+          <h2>UNIVAULT</h2>
+          <div class="subtitle">
+            Where You can find Previous years Question Papers
+          </div>
+        </div>
+        <div class="card-body">
+          <a href="https://univault-portal.vercel.app/" target="_blank"
+            >https://univault-portal.vercel.app/</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-3">
+        <div class="card-header">
+          <h2>PLACEMENT-PORTAL</h2>
+          <div class="instructor">Where You can find Placement Records</div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://sites.google.com/rvu.edu.in/socseplacementportal"
+            target="_blank"
+            >https://sites.google.com/rvu.edu.in/socseplacementportal</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-4">
+        <div class="card-header">
+          <h2>LIBRARY-PAGE</h2>
+          <div class="subtitle">Where You can find Library Resources</div>
+        </div>
+        <div class="card-body">
+          <a href="https://rvu.edu.in/library.php" target="_blank"
+            >https://rvu.edu.in/library.php</a
+          >
+          <a href="https://rvu.edu.in/resources.php#myDiv1" target="_blank"
+            >https://rvu.edu.in/resources.php#myDiv1</a
+          >
+          <a
+            href="http://103.213.211.197/opac/opac21/Search.aspx"
+            target="_blank"
+            >http://103.213.211.197/opac/opac21/Search.aspx</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-5">
+        <div class="card-header">
+          <h2>EXAM-OFFICE</h2>
+          <div class="subtitle">
+            Where You can find Seating Arrangement Of Exams
+          </div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://sites.google.com/rvu.edu.in/socse-exam-office"
+            target="_blank"
+            >https://sites.google.com/rvu.edu.in/socse-exam-office</a
+          >
+        </div>
+      </div>
+
+      <div class="card card-6">
+        <div class="card-header">
+          <h2>UNSTOP</h2>
+          <div class="subtitle">Where You can find College Events List</div>
+        </div>
+        <div class="card-body">
+          <a
+            href="https://unstop.com/college-fests/kalpavikas-10-rv-university-bangalore-396955"
+            target="_blank"
+            >https://unstop.com/college-fests/kalpavikas-10-rv-university-bangalore-396955</a
+          >
+        </div>
+      </div>
+
+      <div class="card add-card" id="add-card-btn">
+        <div class="add-icon">+</div>
+        <div class="add-text">Add New Link</div>
+      </div>
+    </div>
+
+    <div class="modal" id="add-link-modal">
+      <!-- NOTE: Modal styling moved to styles/modal.css (frosted glass). -->
+      <!-- NOTE: Link suggestions are stored locally in the browser (localStorage) and are NOT sent to any server. -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>ADD LINKS FOR YOURSELF</h2>
+        </div>
+        <div class="modal-body">
+          <form id="link-form">
+            <div class="form-instructions" id="form-instructions">
+              <strong
+                >🔒 Your entries are kept safe on your device — not on any
+                server.</strong
+              >
+              <div style="margin-top: 8px; opacity: 0.95">
+                If you clear your browser or switch devices, your links won’t
+                carry over.
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="link-title">Title</label>
+              <input
+                type="text"
+                id="link-title"
+                placeholder="e.g., Course Materials Portal"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="link-url">URL</label>
+              <input
+                type="url"
+                id="link-url"
+                placeholder="https://example.com"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="link-description">Description</label>
+              <textarea
+                id="link-description"
+                placeholder="Brief description of what this link provides..."
+                required
+              ></textarea>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" id="cancel-btn">
+                Cancel
+              </button>
+              <button type="submit" class="btn btn-primary">Submit Link</button>
+            </div>
+          </form>
+          <div class="spinner" id="loading-spinner"></div>
+          <div class="success-message" id="success-message">
+            Thank you! Your link suggestion has been submitted.
+          </div>
+          <div class="error-message" id="error-message">
+            There was an error submitting your link. Please try again.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="scripts/app.js"></script>
+  </body>
+</html>
