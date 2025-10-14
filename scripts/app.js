@@ -104,13 +104,20 @@ document.addEventListener("DOMContentLoaded", function () {
     addBtn.addEventListener("click", () => {
       console.log("✅ Opening modal");
       modal.style.display = "flex";
+      modal.setAttribute("aria-hidden", "false");
+      // move focus to the modal for keyboard users
+      const firstInput = document.getElementById("link-title");
+      if (firstInput) firstInput.focus();
     });
   }
 
   if (cancelBtn && modal) {
     cancelBtn.addEventListener("click", () => {
       modal.style.display = "none";
+      modal.setAttribute("aria-hidden", "true");
       form.reset();
+      // return focus to the add button
+      if (addBtn) addBtn.focus();
     });
   }
 
@@ -164,6 +171,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // Close modal after 2 seconds
         setTimeout(() => {
           modal.style.display = "none";
+          modal.setAttribute("aria-hidden", "true");
+          if (addBtn) addBtn.focus();
         }, 2000);
       } catch (error) {
         showMessage("Failed to save link", "error");

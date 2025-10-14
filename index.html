@@ -279,28 +279,36 @@
 
       /* Add Card Button Styles */
       .add-card {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 4px dashed rgba(255, 255, 255, 0.18);
+        cursor: pointer;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        background: rgba(255, 255, 255, 0.25);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 2px dashed rgba(255, 255, 255, 0.5);
-        cursor: pointer;
-        transition: all 0.3s ease;
+        min-height: 200px;
+        position: relative;
       }
 
       .add-card:hover {
-        background: rgba(255, 255, 255, 0.35);
         transform: translateY(-5px);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        background: rgba(255, 255, 255, 0.35);
+        border: 1px solid rgba(255, 255, 255, 0.3);
       }
 
       .add-icon {
         font-size: 3em;
-        color: rgba(255, 255, 255, 0.8);
-        margin-bottom: 10px;
+        color: rgba(255, 255, 255, 0.9);
+        margin-bottom: 12px;
         transition: all 0.3s ease;
+        font-weight: 300;
       }
 
       .add-card:hover .add-icon {
@@ -312,6 +320,12 @@
         color: rgba(255, 255, 255, 0.9);
         font-weight: 600;
         font-size: 1.2em;
+        transition: all 0.3s ease;
+        text-align: center;
+      }
+
+      .add-card:hover .add-text {
+        color: white;
       }
 
       /* modal styles moved to styles/modal.css */
@@ -569,10 +583,10 @@
       </div>
     </div>
 
-    <div class="modal" id="add-link-modal">
+    <div class="modal" id="add-link-modal" style="display: none">
       <!-- NOTE: Modal styling moved to styles/modal.css (frosted glass). -->
       <!-- NOTE: Link suggestions are stored locally in the browser (localStorage) and are NOT sent to any server. -->
-      <div class="modal-content">
+      <div class="modal-content" tabindex="-1">
         <div class="modal-header">
           <h2>ADD LINKS FOR YOURSELF</h2>
         </div>
